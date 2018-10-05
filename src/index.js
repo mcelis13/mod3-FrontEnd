@@ -14,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const userInputData = document.querySelector('#new_message');
   const rc = document.getElementById('receivers-container');
 
-
       loginButton.addEventListener('click', function(e){
           e.preventDefault();
           event.preventDefault();
@@ -56,14 +55,22 @@ document.addEventListener('DOMContentLoaded', () => {
               "data":`{
                 \"action\":\"onChat\",
                 \"content\":\"${userInput.value}\",
-                \"conversation_id\":\"${userDiv.dataset.conversation_id}\"
+                \"conversation_id\":\"${userDiv.dataset.conversation_id}\",
+                \"sender_id\":\"${userDiv.dataset.sender_id}\"
               }`
             };
-            myWebSocket.onmessage = function (message){
-              //myWebSocket.send(JSON.stringify(message));
-            }
+            myWebSocket.send(message);
           })
         };
+
+        sendButton.addEventListener('click', function(event){
+          let userName = document.getElementById('user_name').value;
+          let messageList = document.createElement('ul');
+          let message = document.createElement('li');
+          message.innerText = `${userName}: ${userInputData.value}`;
+          messageList.append(message);
+          userDiv.append(messageList);
+        })
 
 
   fetch(`${messagesUrl}`)
@@ -106,7 +113,7 @@ function displayRecievers(){
                     })
           })
           .then(resp => resp.json())
-          .then(resp => userDiv.dataset.conversation_id = resp.id)
+          .then(resp => {userDiv.dataset.conversation_id = resp.id})
         });
         button.innerText = ele.user_name;
         li.append(button);
